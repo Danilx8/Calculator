@@ -13,17 +13,15 @@
 
 using namespace std;
 
-class BigInt {
+class bigInt {
   private:
-    enum Sign {positive, negative};
-    Sign mySign;
+    enum sign {positive, negative};
+    sign mySign;
     vector<char> myDigits;
     int myDigitsNumber; 
 
-  public:
-
   private:
-    void AddDigit (int value) {
+    void addDigit (int value) {
       if (myDigitsNumber >= myDigits.size()) {
         myDigits.resize(myDigits.size() * 2);
       }
@@ -31,62 +29,66 @@ class BigInt {
       ++myDigitsNumber;
     }
     
-    string ToString() {
+    string toString() {
       int numberIndex;
       int length = myDigitsNumber;
       string readyString;
       
-      if (IsNegative()) {
+      if (isNegative()) {
         readyString = '-';
       }
       
       for (numberIndex = length - 1; numberIndex >= 0; --numberIndex) {
-        readyString += char('0' + GetDigit(numberIndex));
+        readyString += char('0' + getDigit(numberIndex));
       }
       
       return readyString;
     }
     
-    int GetDigit(int numberIndex) {
+    int getDigit(int numberIndex) {
       if (numberIndex >= 0 && numberIndex < myDigitsNumber){
         return myDigits[numberIndex] - '0';
       }
       return 0;
     }
     
-    bool IsNegative() {
+    bool isNegative() {
       return mySign == negative;
     }  
     
-    bool IsPositive() {
+    bool isPositive() {
       return mySign == positive;
     }
     
-    void Normalize() {
+    void normalize() {
       int counter;
       int length = myDigitsNumber;
       
-      for (counter = length - 1; counter >= 0; --counter) {
-        if (GetDigit(counter) != 0) {
+      for (numberIndex = length - 1; numberIndex >= 0; --numberIndex) {
+        if (getDigit(numberIndex) != 0) {
           break;
         }
         --myDigitsNumber;
       }
       
-      if (counter < 0) {
+      if (numberIndex < 0) {
         myDigitsNumber = 1;
         mySign = positive;
       }
     }
     
+    int digitsNumber() {
+      return myDigitsNumber;
+    }
+    
   public:
-    BigInt(): 
+    bigInt(): 
     mySign(positive),
     myDigits(1, '0'),
     myDigitsNumber(1)
     {}
 
-    BigInt(int number): 
+    bigInt(int number): 
     mySign(positive),
     myDigits(1, '0'),
     myDigitsNumber(0)
@@ -97,13 +99,13 @@ class BigInt {
       }
 
       do {
-        AddDigit(number % 10);
+        addDigit(number % 10);
         number /= 10;
       } while (number != 0);
 
     }
 
-    BigInt(const string& inputString): 
+    bigInt(const string& inputString): 
     mySign(positive),
     myDigits(inputString.length(), '0'),
     myDigitsNumber(0)
@@ -113,7 +115,7 @@ class BigInt {
 
       if (inputString.size() == 0) {
         myDigits.resize(1);
-        AddDigit(0);
+        addDigit(0);
         return;
       }
 
@@ -127,33 +129,83 @@ class BigInt {
       }
 
       for (numberIndex = inputString.size() - 1; numberIndex >= limit; --numberIndex) {
-        AddDigit(inputString[numberIndex] - '0');
+        addDigit(inputString[numberIndex] - '0');
       }
       
-      Normalize();
+      normalize();
     }
     
-    void Print(ostream& output) {
-      output << ToString();
+    void print(ostream& output) {
+      output << toString();
+    }
+    
+    bool isEqual(bigInt& number) {
+      if (myDigitsNumber != number.digitsNumber() || isNegative() != number.isNegative()) {
+        return false;
+      }
+      
+      int counter;
+      int length = myDigitsNumber;
+      
+      for (counter = 0; counter < length; ++counter) {
+        if (getDigit(counter) != number.getDigit(counter)) {
+          return false;
+        }
+      }
+      
+      return true;
+    }
+    
+    bool lessThan(bigInt& number) {
+      if (isNegative() != number.isNegative()){
+         return isNegative();    
+      }
+      
+      if (digitsNumber() != number.digitsNumber()) {
+        return (digitsNumber() < number.digitsNumber() && isPositive()) ||
+               (digitsNumber() > number.digitsNumber() && isNegative());
+      }
+      
+      for (int numberIndex = digitsNumber(); numberIndex >= 0; --numberIndex) {
+        if (getDigit(numberIndex) < number.getDigit(numberIndex)) {
+          return !isNegative();
+        }
+      }
+      
+      return false;
     }
 };
 
-ostream& operator <<(ostream& stream, BigInt& number) {
-  number.Print(stream);
+ostream& operator << (ostream& stream, bigInt& number) {
+  number.print(stream);
   return stream;
 }
 
-istream& operator>> (istream& in, BigInt& number) {
+istream& operator >> (istream& in, bigInt& number) {
   string line;
   in >> line;
-  number = BigInt(line);
+  number = bigInt(line);
   return in;
 }
 
-int main() {
-  int num = 5;
-  BigInt();
+bool operator == (bigInt& leftNumber, bigInt& rightNumber) {
+  return leftNumber.isEqual(rightNumber);
+}
 
+bool operator < (bigInt& leftNumber, bigInt& rightNumber) {
+  return leftNumber.lessThan(rightNumber);
+}
+
+bool operator > (bigInt& leftNumber, bigInt& rightNumber) {
+  return (leftNumber.lessThan(rightNumber ) && !leftNumber.isEqual(rightNumber));
+}
+
+int main() {
+  bigInt num1 = bigInt(2);
+  bigInt num2 = bigInt(5);
+  
+  bool less = (num1 > num2);
+  cout << less;
   /*
     int accumulatingVariable = 0;
     int currentNumber;
