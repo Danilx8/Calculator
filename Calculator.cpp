@@ -346,8 +346,7 @@ class bigInt {
 
     const bigInt& operator /= (bigInt& divisor) {
       bigInt divisorTracker = bigInt(divisor);
-      int result = 1;
-      bigInt product;
+      bigInt quotient;
       int wasNegative = 0;
 
       if (isNegative() || divisor.isNegative()) {
@@ -360,24 +359,63 @@ class bigInt {
           ++wasNegative;
         }
       }
-
-      product = divisorTracker;
-      while (product.lessThan(*this)) {
-        product += divisorTracker;
-        result += 1;
+      
+      bigInt leftmostCollectedDividend = changeDigit(0, getDigit(digitsNumber()));
+      bigInt remaind;
+      bigInt product;
+      int productDigit = 0;
+      leftmostCollectedDividend.print(cout);
+      cout << endl;
+      if (&leftmostCollectedDividend == &divisor) {
+        *this = 1;
+        return *this;
       }
-
-      if (!isEqual(product)) {
-        result += -1;
+      
+      for (int numberIndex = digitsNumber() - 2; numberIndex >= 0; --numberIndex) {
+        
+        leftmostCollectedDividend.addDigit(getDigit(numberIndex));
+        divisorTracker = divisor;
+        
+        cout << getDigit(1) << getDigit(0) << ' ' << numberIndex << endl;
+        
+        
+        
+        leftmostCollectedDividend.print(cout);
+        cout << endl;
+        
+        while (divisorTracker.lessThan(leftmostCollectedDividend) || 
+        divisorTracker.isEqual(leftmostCollectedDividend)) {
+          divisorTracker += divisor;
+          productDigit += 1;
+          cout << "whoolie ya tut delayu";
+        }
+        
+        if (productDigit != 0) {
+          bigInt multipliedDivisor = divisor;
+          ++productDigit;
+          multipliedDivisor *= productDigit;
+          
+          multipliedDivisor.print(cout);
+          cout << "ssssssssssssssssssss"<< endl;
+          if (&multipliedDivisor > &leftmostCollectedDividend) {
+             --productDigit;
+          }
+          
+          cout << productDigit << endl;
+          
+          
+          remaind = &leftmostCollectedDividend - &multipliedDivisor;
+          product.addDigit(productDigit);
+          productDigit = 0;
+          leftmostCollectedDividend = remaind;
+        }
       }
-
-      *this = result;
-      (*this).print(cout);
+      //product.print(cout);
+      
       if (wasNegative == 1) {
         *this *= -1;
         mySign = sign(negative);  
       }
-      cout << wasNegative;
       return *this;
     }
 };
