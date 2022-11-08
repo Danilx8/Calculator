@@ -348,7 +348,7 @@ class bigInt {
       bigInt divisorTracker = bigInt(divisor);
       bigInt quotient;
       int wasNegative = 0;
-
+      
       if (isNegative() || divisor.isNegative()) {
         if (isNegative()) {
           *this *= -1;
@@ -360,26 +360,26 @@ class bigInt {
         }
       }
       
+      if (isEqual(divisorTracker)) {
+        *this = 1;
+        return *this;
+      }
+      
       bigInt leftmostCollectedDividend;
       bigInt remaind;
       bigInt product;
       int productDigit = 0;
       
       leftmostCollectedDividend += getDigit(digitsNumber() - 1);
-      if (leftmostCollectedDividend.isEqual(divisorTracker)) {
-        *this = 1;
-        return *this;
-      }
+      
       
       while (divisorTracker.lessThan(leftmostCollectedDividend)) {
         divisorTracker += divisor;
         ++productDigit;
-        if (divisorTracker.isEqual(leftmostCollectedDividend)) {
-          ++productDigit;
-        }
       } 
-      
-      
+      if (divisorTracker.isEqual(leftmostCollectedDividend)) {
+        ++productDigit;
+      }
       
       if (digitsNumber() == 1) {
         *this = productDigit;
@@ -392,17 +392,26 @@ class bigInt {
         return *this;
       }
     
+      leftmostCollectedDividend -= productDigit;
+      productDigit = 0;
+      
+      
       for (int numberIndex = digitsNumber() - 2; numberIndex >= 0; --numberIndex) {
-        leftmostCollectedDividend.addDigit(getDigit(numberIndex));
+        if (leftmostCollectedDividend.isEqual(0)) {
+          leftmostCollectedDividend += getDigit(numberIndex);
+        } else {
+         leftmostCollectedDividend.addDigit(getDigit(numberIndex));
+        }
         divisorTracker = divisor;
         leftmostCollectedDividend.print(cout);
         cout << endl;
         while (divisorTracker.lessThan(leftmostCollectedDividend)) {
           divisorTracker += divisor;
           ++productDigit;
-          if (divisorTracker.isEqual(leftmostCollectedDividend)) {
+        }
+        
+        if (divisorTracker.isEqual(leftmostCollectedDividend)) {
           ++productDigit;
-          }
         }
         
         if (productDigit != 0) {
@@ -412,6 +421,7 @@ class bigInt {
         
       }
       product.print(cout);
+      cout << endl;
 
       if (wasNegative == 1) {
         *this *= -1;
