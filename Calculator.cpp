@@ -355,63 +355,64 @@ class bigInt {
           ++wasNegative;
         }
         if (divisor.isNegative()) {
-          divisorTracker *= -1;
+          divisor *= -1;
           ++wasNegative;
         }
       }
       
-      bigInt leftmostCollectedDividend = changeDigit(0, getDigit(digitsNumber()));
+      bigInt leftmostCollectedDividend;
       bigInt remaind;
       bigInt product;
       int productDigit = 0;
-      leftmostCollectedDividend.print(cout);
-      cout << endl;
-      if (&leftmostCollectedDividend == &divisor) {
+      
+      leftmostCollectedDividend += getDigit(digitsNumber() - 1);
+      if (leftmostCollectedDividend.isEqual(divisorTracker)) {
         *this = 1;
         return *this;
       }
       
-      for (int numberIndex = digitsNumber() - 2; numberIndex >= 0; --numberIndex) {
+      while (divisorTracker.lessThan(leftmostCollectedDividend)) {
+        divisorTracker += divisor;
+        ++productDigit;
+        if (divisorTracker.isEqual(leftmostCollectedDividend)) {
+          ++productDigit;
+        }
+      } 
+      
+      
+      
+      if (digitsNumber() == 1) {
+        *this = productDigit;
         
+        if (wasNegative == 1) {
+          *this *= -1;
+          mySign = sign(negative);  
+        }
+        
+        return *this;
+      }
+    
+      for (int numberIndex = digitsNumber() - 2; numberIndex >= 0; --numberIndex) {
         leftmostCollectedDividend.addDigit(getDigit(numberIndex));
         divisorTracker = divisor;
-        
-        cout << getDigit(1) << getDigit(0) << ' ' << numberIndex << endl;
-        
-        
-        
         leftmostCollectedDividend.print(cout);
         cout << endl;
-        
-        while (divisorTracker.lessThan(leftmostCollectedDividend) || 
-        divisorTracker.isEqual(leftmostCollectedDividend)) {
+        while (divisorTracker.lessThan(leftmostCollectedDividend)) {
           divisorTracker += divisor;
-          productDigit += 1;
-          cout << "whoolie ya tut delayu";
+          ++productDigit;
+          if (divisorTracker.isEqual(leftmostCollectedDividend)) {
+          ++productDigit;
+          }
         }
         
         if (productDigit != 0) {
-          bigInt multipliedDivisor = divisor;
-          ++productDigit;
-          multipliedDivisor *= productDigit;
-          
-          multipliedDivisor.print(cout);
-          cout << "ssssssssssssssssssss"<< endl;
-          if (&multipliedDivisor > &leftmostCollectedDividend) {
-             --productDigit;
-          }
-          
-          cout << productDigit << endl;
-          
-          
-          remaind = &leftmostCollectedDividend - &multipliedDivisor;
           product.addDigit(productDigit);
           productDigit = 0;
-          leftmostCollectedDividend = remaind;
         }
+        
       }
-      //product.print(cout);
-      
+      product.print(cout);
+
       if (wasNegative == 1) {
         *this *= -1;
         mySign = sign(negative);  
