@@ -237,7 +237,7 @@ class bigInt {
       int difference;
       int borrow = 0;
       int length = digitsNumber();
-      bigInt temp;
+      bigInt subtractionHelper;
 
       if (number.isEqual(0)) {
         return *this;
@@ -249,18 +249,17 @@ class bigInt {
       }
 
       if (isNegative() != number.isNegative()) {
-        temp = number;
-        temp *= -1;
-        *this += temp;
+        subtractionHelper = number;
+        subtractionHelper *= -1;
+        *this += subtractionHelper;
         return *this;
       }
 
       if (isPositive() && (*this).lessThan(number) ||
           isNegative() && !(*this).lessThan(number)) {
-        temp = number;
-        temp -= *this;
-        cout << endl;
-        *this = temp;
+        subtractionHelper = number;
+        subtractionHelper -= *this;
+        *this = subtractionHelper;
         if (isPositive()) {
           mySign = negative;
         } else {
