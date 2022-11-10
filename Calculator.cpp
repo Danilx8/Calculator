@@ -484,8 +484,9 @@ bigInt operator / (const bigInt& leftNumber, bigInt& rightNumber) {
 int main() {
     bigInt accumulatingVariable = 0;
     bigInt currentNumber;
-    char operation = '+';
-    while (operation != '=') {
+    char operation = '+'; 
+    
+    while (operation != '!') {
       cout << "enter value: ";
       cin >> currentNumber;
       switch (operation) {
@@ -504,12 +505,36 @@ int main() {
         case '/':
           accumulatingVariable /= currentNumber;
           break;
-
+          
+        case '<':
+          if (accumulatingVariable < currentNumber) {
+            cout << "true" << endl;
+          } else {
+            cout << "true" << endl;
+          }
+          break;
+        
+        case '>':
+          if (accumulatingVariable > currentNumber) {
+            cout << "true" << endl;
+          } else {
+            cout << "false" << endl;
+          }
+          break;
+          
+        case '=':
+          if (accumulatingVariable == currentNumber) {
+            cout << "true" << endl;
+          } else {
+            cout << "false" << endl;
+          }
+          break;
+        
         default:
           cout << "error with operator" << endl;
       }
       cout << "--> " << accumulatingVariable << endl;
-      cout << "Enter operator (+ - * / (= to quit)): ";
+      cout << "Enter operator (+ - * / < > = (! to quit)): ";
       cin >> operation;
     }
     cout << accumulatingVariable << endl;
