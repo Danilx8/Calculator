@@ -49,7 +49,6 @@ class bigInt {
 
     int getDigit(int numberIndex) const {
       if (numberIndex >= 0 && numberIndex < myDigitsNumber) {
-
         return myDigits[numberIndex] - '0';
       }
       return 0;
@@ -371,61 +370,12 @@ class bigInt {
       int saverIndex;
       int productDigit = 0;
 
-      /*leftmostCollectedDividend += getDigit(digitsNumber() - 1);
-
-      leftmostCollectedDividend.print(cout);
-      cout << endl;
-
-      while (divisorTracker.lessThan(leftmostCollectedDividend)) {
-        divisorTracker += divisor;
-        ++productDigit;
-      }
-
-      if (!divisorTracker.lessThan(leftmostCollectedDividend)) {
-        if (divisorTracker.isEqual(leftmostCollectedDividend)) {
-        ++productDigit;
-        } else {
-          divisorTracker -= divisor;
-        }
-      }
-
-      cout << "product " << productDigit << endl;
-      divisorTracker.print(cout);
-      cout << " divisor tracker" << endl;
-
-      if (digitsNumber() == 1) {
-        *this = productDigit;
-
-        if (wasNegative == 1) {
-          *this *= -1;
-          mySign = sign(negative);
-        }
-
-        return *this;
-      }
-
-      if (productDigit != 0) {
-        product += productDigit;
-        productDigit = 0;
-      }
-
-      leftmostCollectedDividend.print(cout);
-      cout << endl;
-
-      leftmostCollectedDividend -= divisorTracker;
-      productDigit = 0;
-
-      leftmostCollectedDividend.print(cout);
-      cout << endl; */
-
       for (int numberIndex = digitsNumber() - 1; numberIndex >= 0; --numberIndex) {
         if (leftmostCollectedDividend.isEqual(0)) {
           leftmostCollectedDividend += getDigit(numberIndex);
         } else {
           saverIndex = 0;
           dividendSaver = leftmostCollectedDividend;
-          dividendSaver.print(cout);
-          cout << " dividend saver" << endl;
           leftmostCollectedDividend = getDigit(numberIndex);
           while (saverIndex <= (dividendSaver.digitsNumber() - 1)) {
             leftmostCollectedDividend.addDigit(dividendSaver.getDigit(saverIndex));
@@ -433,12 +383,9 @@ class bigInt {
           }
 
         }
-
+        
         divisorTracker = divisor;
-
-        leftmostCollectedDividend.print(cout);
-        cout << " collector" << endl;
-
+        
         while (divisorTracker.lessThan(leftmostCollectedDividend)) {
           divisorTracker += divisor;
           ++productDigit;
@@ -447,15 +394,11 @@ class bigInt {
         if (productDigit != 0) {
           if (!divisorTracker.lessThan(leftmostCollectedDividend)) {
             if (divisorTracker.isEqual(leftmostCollectedDividend)) {
-              cout << "should add one more to product digit" << endl;
               ++productDigit;
             } else {
               divisorTracker -= divisor;
             }
           }
-
-          cout << "product digit " << productDigit << endl;
-
           product.addDigit(productDigit);
           leftmostCollectedDividend -= divisorTracker;
           productDigit = 0;
@@ -467,15 +410,9 @@ class bigInt {
       }
 
       *this = product.getDigit(product.digitsNumber() - 1);
-      print(cout);
-      cout << " first state of this" << endl;
       for (int productIndex = product.digitsNumber() - 2; productIndex > 0; --productIndex) {
         addDigit(product.getDigit(productIndex));
-        print(cout);
-        cout << endl;
       }
-      product.print(cout);
-      cout << endl;
 
       if (wasNegative == 1) {
         *this *= -1;
@@ -546,21 +483,12 @@ bigInt operator / (const bigInt& leftNumber, bigInt& rightNumber) {
 }
 
 int main() {
-  bigInt num1;
-  bigInt num2;
-  cin >> num1 >> num2;
-  bigInt result = num1 / num2;
-  cout << "result: " << result << endl;
-  /*
-    int accumulatingVariable = 0;
-    int currentNumber;
+    bigInt accumulatingVariable = 0;
+    bigInt currentNumber;
     char operation = '+';
-
-
     while (operation != '=') {
       cout << "enter value: ";
       cin >> currentNumber;
-
       switch (operation) {
         case '+':
           accumulatingVariable += currentNumber;
@@ -585,7 +513,9 @@ int main() {
       cout << "Enter operator (+ - * / (= to quit)): ";
       cin >> operation;
     }
-    cout << accumulatingVariable;
-  */
+    cout << accumulatingVariable << endl;
+  
+  system("pause");
   return 0;
+  
 }
