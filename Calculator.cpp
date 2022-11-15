@@ -510,7 +510,7 @@ int main() {
           if (accumulatingVariable < currentNumber) {
             cout << "true" << endl;
           } else {
-            cout << "true" << endl;
+            cout << "false" << endl;
           }
           break;
         
