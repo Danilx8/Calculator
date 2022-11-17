@@ -49,7 +49,6 @@ class bigInt {
 
     int getDigit(int numberIndex) const {
       if (numberIndex >= 0 && numberIndex < myDigitsNumber) {
-        
         return myDigits[numberIndex] - '0';
       }
       return 0;
@@ -184,7 +183,7 @@ class bigInt {
           return isNegative();
         }
       }
-      
+
       return false;
     }
 
@@ -238,30 +237,29 @@ class bigInt {
       int difference;
       int borrow = 0;
       int length = digitsNumber();
-      bigInt temp;
-      
+      bigInt subtractionHelper;
+
       if (number.isEqual(0)) {
         return *this;
       }
-      
+
       if (this == &number) {
         *this = 0;
         return *this;
       }
 
       if (isNegative() != number.isNegative()) {
-        temp = number;
-        temp *= -1;
-        *this += temp;
+        subtractionHelper = number;
+        subtractionHelper *= -1;
+        *this += subtractionHelper;
         return *this;
       }
 
       if (isPositive() && (*this).lessThan(number) ||
           isNegative() && !(*this).lessThan(number)) {
-        temp = number;
-        temp -= *this;
-        cout << endl;
-        *this = temp;
+        subtractionHelper = number;
+        subtractionHelper -= *this;
+        *this = subtractionHelper;
         if (isPositive()) {
           mySign = negative;
         } else {
@@ -289,7 +287,7 @@ class bigInt {
       int product;
       int numberIndex;
       int length = digitsNumber();
-      
+
       if (number == 0) {
         *this = 0;
         return *this;
@@ -314,21 +312,21 @@ class bigInt {
         addDigit(carry % BASE);
         carry /= BASE;
       }
-      
+
       return *this;
     }
 
     const bigInt& operator *= (const bigInt& multiplier) {
       if (isNegative() != multiplier.isNegative()) {
-        mySign = negative;       
+        mySign = negative;
       } else {
         mySign = positive;
       }
-      
+
       if (multiplier.isEqual(1)) {
         return *this;
       }
-      
+
       bigInt numberTensTracker(*this);
       bigInt summ(0);
       int numberIndex;
@@ -348,7 +346,7 @@ class bigInt {
       bigInt divisorTracker = bigInt(divisor);
       bigInt quotient;
       int wasNegative = 0;
-      
+
       if (isNegative() || divisor.isNegative()) {
         if (isNegative()) {
           *this *= -1;
@@ -359,73 +357,65 @@ class bigInt {
           ++wasNegative;
         }
       }
-      
+
       if (isEqual(divisorTracker)) {
         *this = 1;
         return *this;
       }
-      
+
       bigInt leftmostCollectedDividend;
-      bigInt remaind;
       bigInt product;
+      bigInt dividendSaver;
+      int saverIndex;
       int productDigit = 0;
-      
-      leftmostCollectedDividend += getDigit(digitsNumber() - 1);
-      
-      
-      while (divisorTracker.lessThan(leftmostCollectedDividend)) {
-        divisorTracker += divisor;
-        ++productDigit;
-      } 
-      if (divisorTracker.isEqual(leftmostCollectedDividend)) {
-        ++productDigit;
-      }
-      
-      if (digitsNumber() == 1) {
-        *this = productDigit;
-        
-        if (wasNegative == 1) {
-          *this *= -1;
-          mySign = sign(negative);  
-        }
-        
-        return *this;
-      }
-    
-      leftmostCollectedDividend -= productDigit;
-      productDigit = 0;
-      
-      
-      for (int numberIndex = digitsNumber() - 2; numberIndex >= 0; --numberIndex) {
+
+      for (int numberIndex = digitsNumber() - 1; numberIndex >= 0; --numberIndex) {
         if (leftmostCollectedDividend.isEqual(0)) {
           leftmostCollectedDividend += getDigit(numberIndex);
         } else {
-         leftmostCollectedDividend.addDigit(getDigit(numberIndex));
+          saverIndex = 0;
+          dividendSaver = leftmostCollectedDividend;
+          leftmostCollectedDividend = getDigit(numberIndex);
+          while (saverIndex <= (dividendSaver.digitsNumber() - 1)) {
+            leftmostCollectedDividend.addDigit(dividendSaver.getDigit(saverIndex));
+            ++saverIndex;
+          }
+
         }
+        
         divisorTracker = divisor;
-        leftmostCollectedDividend.print(cout);
-        cout << endl;
+        
         while (divisorTracker.lessThan(leftmostCollectedDividend)) {
           divisorTracker += divisor;
           ++productDigit;
         }
-        
-        if (divisorTracker.isEqual(leftmostCollectedDividend)) {
-          ++productDigit;
-        }
-        
+
         if (productDigit != 0) {
+          if (!divisorTracker.lessThan(leftmostCollectedDividend)) {
+            if (divisorTracker.isEqual(leftmostCollectedDividend)) {
+              ++productDigit;
+            } else {
+              divisorTracker -= divisor;
+            }
+          }
+          product.addDigit(productDigit);
+          leftmostCollectedDividend -= divisorTracker;
+          productDigit = 0;
+        } else if (saverIndex > 2 && product.getDigit(1) != 0) {
           product.addDigit(productDigit);
           productDigit = 0;
         }
-        
+
       }
-      product.print(cout);
-      cout << endl;
+
+      *this = product.getDigit(product.digitsNumber() - 1);
+      for (int productIndex = product.digitsNumber() - 2; productIndex > 0; --productIndex) {
+        addDigit(product.getDigit(productIndex));
+      }
 
       if (wasNegative == 1) {
         *this *= -1;
-        mySign = sign(negative);  
+        mySign = sign(negative);
       }
       return *this;
     }
@@ -486,31 +476,19 @@ bigInt operator * (const bigInt& leftNumber, const bigInt& rightNumber) {
 }
 
 bigInt operator / (const bigInt& leftNumber, bigInt& rightNumber) {
-  if (rightNumber == 0) {
-    cout << "Division by 0 is not allowed";
-  }
-  
   bigInt result(leftNumber);
   result /= rightNumber;
   return result;
 }
 
 int main() {
-  bigInt num1;
-  bigInt num2;
-  cin >> num1 >> num2;
-  bigInt result = num1 / num2;
-  cout << "result: " << result << endl;
-  /*
-    int accumulatingVariable = 0;
-    int currentNumber;
-    char operation = '+';
-
-
-    while (operation != '=') {
+    bigInt accumulatingVariable = 0;
+    bigInt currentNumber;
+    char operation = '+'; 
+    
+    while (operation != '!') {
       cout << "enter value: ";
       cin >> currentNumber;
-
       switch (operation) {
         case '+':
           accumulatingVariable += currentNumber;
@@ -527,15 +505,41 @@ int main() {
         case '/':
           accumulatingVariable /= currentNumber;
           break;
-
+          
+        case '<':
+          if (accumulatingVariable < currentNumber) {
+            cout << "true" << endl;
+          } else {
+            cout << "false" << endl;
+          }
+          break;
+        
+        case '>':
+          if (accumulatingVariable > currentNumber) {
+            cout << "true" << endl;
+          } else {
+            cout << "false" << endl;
+          }
+          break;
+          
+        case '=':
+          if (accumulatingVariable == currentNumber) {
+            cout << "true" << endl;
+          } else {
+            cout << "false" << endl;
+          }
+          break;
+        
         default:
           cout << "error with operator" << endl;
       }
       cout << "--> " << accumulatingVariable << endl;
-      cout << "Enter operator (+ - * / (= to quit)): ";
+      cout << "Enter operator (+ - * / < > = (! to quit)): ";
       cin >> operation;
     }
-    cout << accumulatingVariable;
-  */
+    cout << accumulatingVariable << endl;
+  
+  system("pause");
   return 0;
+  
 }
