@@ -1,4 +1,4 @@
-# Tetris
+# Calculator
 
 A *simple* C++ string calculator for big numbers. It uses minimal amount of libraries, hence works really fast and doesn't require any additional measures for deployment. In order for this calculator to function properly, I wrote my own class BigInt, containing required methods and operations, realizing simple Object Oriented Programming principles.
 
